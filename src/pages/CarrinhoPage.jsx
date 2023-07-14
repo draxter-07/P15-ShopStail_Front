@@ -1,7 +1,9 @@
 import styled from "styled-components"
 import Topo from "./components/Topo.jsx"
+import { useNavigate } from "react-router-dom"
 
 export default function CarrinhoPage() {
+  const navigate = useNavigate();
   const itens = [
     {title: "título", image: "https://4429028l.ha.azioncdn.net/img/2022/11/produto/11627/camiseta-preta.jpg?ims=500x700", quantity: 5},
     {title: "título", image: "https://4429028l.ha.azioncdn.net/img/2022/11/produto/11627/camiseta-preta.jpg?ims=500x700", quantity: 5}
@@ -86,6 +88,9 @@ export default function CarrinhoPage() {
       }
     }
   `
+  function toCheckout(){
+    navigate("/checkout");
+  }
   return (
     <>
       <Topo/>
@@ -107,7 +112,7 @@ export default function CarrinhoPage() {
             )}
           </ItensCompra>
           <Botoes>
-            <button>Finalizar compra</button>
+            <button onClick={toCheckout}>Finalizar compra</button>
           </Botoes>
       </PageContent>
     </>
