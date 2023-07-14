@@ -26,8 +26,9 @@ const ResetStyle = createGlobalStyle`
 	footer, header, hgroup, menu, nav, section {
 		display: block;
 	}
-	body {
+	body *{
 		line-height: 1;
+		font-family: 'Roboto';
 	}
 	ol, ul {
 		list-style: none;
