@@ -17,7 +17,7 @@ export default function Topo(){
     `
     return(
         <Top>
-            <div></div>
+            <div>ShopStail</div>
         </Top>
     )
 }

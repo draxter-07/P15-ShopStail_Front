@@ -5,8 +5,8 @@ import { useNavigate } from "react-router-dom"
 export default function CarrinhoPage() {
   const navigate = useNavigate();
   const itens = [
-    {title: "título", image: "https://4429028l.ha.azioncdn.net/img/2022/11/produto/11627/camiseta-preta.jpg?ims=500x700", quantity: 5},
-    {title: "título", image: "https://4429028l.ha.azioncdn.net/img/2022/11/produto/11627/camiseta-preta.jpg?ims=500x700", quantity: 5}
+    {title: "título", image: "https://4429028l.ha.azioncdn.net/img/2022/11/produto/11627/camiseta-preta.jpg?ims=500x700", totalPrice: "10,00", quantity: 5, quantityAvailable: 10},
+    {title: "título", image: "https://4429028l.ha.azioncdn.net/img/2022/11/produto/11627/camiseta-preta.jpg?ims=500x700", totalPrice: "15,00", quantity: 5, quantityAvailable: 10}
   ];
   const PageContent = styled.div`
     box-sizing: border-box;
@@ -33,23 +33,68 @@ export default function CarrinhoPage() {
     flex-direction: row;
     justify-content: space-between;
     align-items: center;
+    img{
+      width: 120px;
+      height: 120px;
+      margin: 0px 20px 0px 0px;
+      border-radius: 10px;
+    }
+  `
+  const DivSee = styled.div`
+    box-sizing: border-box;
+    display: flex;
+    flex-direction: row;
+    justify-content: space-between;
+    align-items: center;
+    width: 100%;
     div{
-      img{
-        width: 120px;
-        height: 120px;
-        margin: 0px 20px 0px 0px;
-        border-radius: 10px;
-      }
+      box-sizing: border-box;
       display: flex;
-      flex-direction: row;
-      align-items: center;
+      flex-direction: column;
+      h1{
+        font-size: 25px;
+        margin: 0px 0px 10px 0px;
+      }
+      h2{
+        font-size: 15px;
+        margin: 0px 0px 5px 0px;
+      }
+    }
+    button{
+      padding: 5px 10px;
+      background-color: rgb(255, 85, 50);
+      border: none;
+      border-radius: 5px;
+      color: rgb(255, 255, 255);
+      font-size: 15px;
+      :hover{
+        background-color: rgb(70, 70, 255);
+      }
+    }
+  `
+  const DivEdit = styled.div`
+    box-sizing: border-box;
+    display: none;
+    flex-direction: row;
+    justify-content: space-between;
+    align-items: center;
+    width: 100%;
+    div{
+      display: flex;
+      flex-direction: column;
+      justify-content: space-between;
       div{
+        box-sizing: border-box;
         display: flex;
-        flex-direction: column;
-        align-items: flex-start;
-        h1{
-          font-size: 25px;
-          margin: 0px 0px 10px 0px;
+        flex-direction: row;
+        justify-content: flex-start;
+        align-items: center;
+        input{
+          width: 40%;
+          padding: 2px 5px;
+          margin: 0px 5px 0px 0px;
+          border: 1px solid rgb(0, 0, 0, 0.2);
+          border-radius: 3px;
         }
         h2{
           font-size: 15px;
@@ -57,6 +102,7 @@ export default function CarrinhoPage() {
       }
       button{
         padding: 5px 10px;
+        margin: 0px 0px 5px 0px;
         background-color: rgb(255, 85, 50);
         border: none;
         border-radius: 5px;
@@ -91,6 +137,21 @@ export default function CarrinhoPage() {
   function toCheckout(){
     navigate("/checkout");
   }
+  function openEditMenu(e){
+    const div = e.target.parentElement.parentElement;
+    div.children[1].style.display = "none";
+    div.children[2].style.display = "flex";
+  }
+  function closeEditMenu(e){
+    const div = e.target.parentElement.parentElement.parentElement;
+    div.children[2].style.display = "none";
+    div.children[1].style.display = "flex";
+  }
+  function changeItem(e){
+    const div = e.target.parentElement.parentElement.parentElement;
+    div.children[2].style.display = "none";
+    div.children[1].style.display = "flex";
+  }
   return (
     <>
       <Topo/>
@@ -98,21 +159,32 @@ export default function CarrinhoPage() {
           <ItensCompra>
             {itens.map(item =>
             <Item>
-              <div>
-                <img src={item.image}></img>
+              <img src={item.image}></img>
+              <DivSee>
                 <div>
                   <h1>{item.title}</h1>
                   <h2>Quantidade: {item.quantity}</h2>
+                  <h2>Preço total: R$ {item.totalPrice}</h2>
                 </div>
-              </div>
-              <div>
-                <button>Excluir</button>
-              </div>
+                <button onClick={(e) => openEditMenu(e)}>Editar</button>
+              </DivSee>
+              <DivEdit>
+                <div>
+                  <div>
+                    <input placeholder="Quantidade"></input>
+                    <h2>Máx: {item.quantityAvailable}</h2>
+                  </div>
+                </div>
+                <div>
+                  <button onClick={(e) => closeEditMenu(e)}>Voltar</button>
+                  <button onClick={(e) => changeItem(e)}>Salvar</button>
+                </div>
+              </DivEdit>
             </Item>
             )}
           </ItensCompra>
           <Botoes>
-            <button onClick={toCheckout}>Finalizar compra</button>
+            <button onClick={toCheckout}>Finalizar compras</button>
           </Botoes>
       </PageContent>
     </>
