@@ -144,7 +144,9 @@ export default function CarrinhoPage() {
     }
   `
   function toCheckout(){
-    navigate("/checkout");
+    axios.post(import.meta.env.VITE_API_URL + "/carrinho", [])
+      .then(resposta => navigate("/checkout"))
+      .catch(response => alert(response.response.data));
   }
   function openEditMenu(e){
     const div = e.target.parentElement.parentElement;

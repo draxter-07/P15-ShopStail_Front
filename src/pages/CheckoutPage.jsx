@@ -40,10 +40,7 @@ export default function CheckoutPage() {
     <>
       <Topo/>
       <PageContent>
-          Olá
-          <Botoes>
-            <button onClick={toCheckout}>Finalizar compra</button>
-          </Botoes>
+          Compra finalizada :3
       </PageContent>
     </>
   )
