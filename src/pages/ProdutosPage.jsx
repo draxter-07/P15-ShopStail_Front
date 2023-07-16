@@ -1,24 +1,27 @@
 import styled from "styled-components"
 import Topo from "./components/Topo.jsx"
 import { useNavigate } from "react-router-dom"
+import { useEffect, useState } from "react"
+import axios from "axios"
 
 export default function ProdutosPage() {
+  const token = JSON.parse(localStorage.getItem("userShopStail"));
   const navigate = useNavigate();
-  const itens = [
-    {title: "título", image: "https://4429028l.ha.azioncdn.net/img/2022/11/produto/11627/camiseta-preta.jpg?ims=500x700", price: "5,00", quantityAvailable: "500", onCart: 0},
-    {title: "título", image: "https://4429028l.ha.azioncdn.net/img/2022/11/produto/11627/camiseta-preta.jpg?ims=500x700", price: "7,00", quantityAvailable: "155", onCart: 0},
-    {title: "título", image: "https://4429028l.ha.azioncdn.net/img/2022/11/produto/11627/camiseta-preta.jpg?ims=500x700", price: "7,00", quantityAvailable: "155", onCart: 0},
-    {title: "título", image: "https://4429028l.ha.azioncdn.net/img/2022/11/produto/11627/camiseta-preta.jpg?ims=500x700", price: "7,00", quantityAvailable: "155", onCart: 0},
-    {title: "título", image: "https://4429028l.ha.azioncdn.net/img/2022/11/produto/11627/camiseta-preta.jpg?ims=500x700", price: "5,00", quantityAvailable: "500", onCart: 0},
-    {title: "título", image: "https://4429028l.ha.azioncdn.net/img/2022/11/produto/11627/camiseta-preta.jpg?ims=500x700", price: "7,00", quantityAvailable: "155", onCart: 0},
-    {title: "título", image: "https://4429028l.ha.azioncdn.net/img/2022/11/produto/11627/camiseta-preta.jpg?ims=500x700", price: "7,00", quantityAvailable: "155", onCart: 0},
-    {title: "título", image: "https://4429028l.ha.azioncdn.net/img/2022/11/produto/11627/camiseta-preta.jpg?ims=500x700", price: "7,00", quantityAvailable: "155", onCart: 0}
-  ];
+  const [products, setProducts] = useState([]);
+
+  axios.defaults.headers.common['Authorization'] = token;
+
+  useEffect(() => {
+    axios.get(import.meta.env.VITE_API_URL + "/produtos")
+      .then(resposta => {setProducts(resposta.data)})
+      .catch(response => alert(response.response.data));
+    }, []);
+
   const PageContent = styled.div`
     box-sizing: border-box;
     width: 100%;
     height: auto;
-    padding: 50px 0px 0px 0px;
+    padding: 50px 0px 20px 0px;
     display: flex;
     flex-direction: column;
     align-items: center;
@@ -45,6 +48,9 @@ export default function ProdutosPage() {
     flex-direction: column;
     justify-content: space-between;
     align-items: center;
+    :hover{
+      box-shadow: 0px 0px 7px 2px rgb(0, 0, 0, 0.5);
+    }
   `
   const DivVenda = styled.div`
     box-sizing: border-box;
@@ -101,19 +107,20 @@ export default function ProdutosPage() {
     }
     div{
         display: flex;
-        flex-direction: row;
+        flex-direction: column;
         justify-content: flex-start;
-        align-items: center;
-        input{
-            width: 50%;
-            padding: 2px 5px;
-            margin: 0px 5px 0px 0px;
-            border: 1px solid rgb(0, 0, 0, 0.2);
-            border-radius: 3px;
-        }
-        h2{
+        width: 100%;
+        margin: 0px 0px 10px 0px;
+        div{
+          display: flex;
+          flex-direction: row;
+          justify-content: flex-start;
+          align-items: center;
+          width: 100%;
+          h2{
             font-size: 15px;
           }
+        }
     }
   `
   function BotaoComprar(atr){
@@ -143,16 +150,63 @@ export default function ProdutosPage() {
   }
   function addToCart(e){
     const div = e.target.parentElement.parentElement;
+    const inputValue = e.target.parentElement.children[1].children[0].children[0].value;
+    const totalPrice = e.target.parentElement.children[1].children[1].children[1].value;
+    const title = e.target.parentElement.parentElement.children[0].children[1].children[0].innerHTML;
+    const image = e.target.parentElement.parentElement.children[0].children[0].src
+    const quantityAvailable = e.target.parentElement.children[1].children[0].children[1].innerHTML.toString().replace("Máx: ", "");
     div.children[0].style.display = "flex";
     div.children[1].style.display = "none";
+    let newObj = {_id: div.id, quantity: inputValue, totalPrice: totalPrice, title: title, image: image, quantityAvailable: quantityAvailable};
+    axios.post(import.meta.env.VITE_API_URL + "/produtos", newObj)
+      .then(resposta => {setProducts(resposta.data)})
+      .catch(response => alert(response.response.data));
+  }
+  function totalPrice(e, price){
+    let quantity = e.target.value;
+    let input = e.target.parentElement.parentElement.children[1].children[1];
+    if (quantity == null){
+      quantity = 0;
+    }
+    let total = (quantity*price).toString();
+    for (let a = 0; a < total.length; a++){
+      if (total[a] == "." && a == total.length - 2){
+        total = total + "0";
+        break;
+      }
+      else if (total[a] != "." && a == total.length - 1){
+        total = total + ".00";
+        break;
+      }
+    }
+    input.value = total;
+  }
+  function Quantity(atr){
+    const Quantity = styled.input`
+      width: 50%;
+      padding: 2px 5px;
+      border: 1px solid rgb(0, 0, 0, 0.2);
+      border-radius: 3px;
+    `
+    return(<Quantity placeholder="Quantidade" onChange={(e) => totalPrice(e, atr.price)}></Quantity>)
+  }
+  function Price(){
+    const Pri = styled.input`
+      border: none;
+      font-size: 15px;
+      width: 20%;
+      padding: none;
+      margin: 0px 0px 2px 0px;
+    `
+    return(<Pri></Pri>)
   }
   return (
     <>
       <Topo/>
       <PageContent>
           <ItensCompra>
-            {itens.map(item =>
-            <Item>
+            {products.map(item =>
+            <Item id={item._id.toString()}>
               <DivVenda>
                 <img src={item.image}></img>
                 <div>
@@ -164,8 +218,14 @@ export default function ProdutosPage() {
               <DivCompra>
                 <button onClick={(e) => closeCompraMenu(e)}>Voltar</button>
                 <div>
-                    <input placeholder="Quantidade"></input>
+                  <div>
+                    <Quantity price={item.price}/>
                     <h2>Máx: {item.quantityAvailable}</h2>
+                  </div>
+                  <div>
+                    <h2>Preço total: R$ </h2>
+                    <Price/>
+                  </div>
                 </div>
                 <button onClick={(e) => addToCart(e)}>Adicionar ao carrinho</button>
               </DivCompra>

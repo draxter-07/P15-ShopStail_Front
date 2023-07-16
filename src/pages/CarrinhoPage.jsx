@@ -1,13 +1,22 @@
 import styled from "styled-components"
 import Topo from "./components/Topo.jsx"
 import { useNavigate } from "react-router-dom"
+import { useState, useEffect } from "react"
+import axios from "axios"
 
 export default function CarrinhoPage() {
+  const token = JSON.parse(localStorage.getItem("userShopStail"));
   const navigate = useNavigate();
-  const itens = [
-    {title: "título", image: "https://4429028l.ha.azioncdn.net/img/2022/11/produto/11627/camiseta-preta.jpg?ims=500x700", totalPrice: "10,00", quantity: 5, quantityAvailable: 10},
-    {title: "título", image: "https://4429028l.ha.azioncdn.net/img/2022/11/produto/11627/camiseta-preta.jpg?ims=500x700", totalPrice: "15,00", quantity: 5, quantityAvailable: 10}
-  ];
+  const [products, setProducts] = useState([]);
+
+  axios.defaults.headers.common['Authorization'] = token;
+
+  useEffect(() => {
+    axios.get(import.meta.env.VITE_API_URL + "/carrinho")
+      .then(resposta => {setProducts(resposta.data)})
+      .catch(response => alert(response.response.data));
+    }, []);
+
   const PageContent = styled.div`
     box-sizing: border-box;
     width: 100%;
@@ -152,12 +161,22 @@ export default function CarrinhoPage() {
     div.children[2].style.display = "none";
     div.children[1].style.display = "flex";
   }
+  if (products.length == 0){
+    return(
+      <>
+      <Topo/>
+      <PageContent>
+          Você não comprou nada ainda :|
+      </PageContent>
+      </>
+    )
+  }
   return (
     <>
       <Topo/>
       <PageContent>
           <ItensCompra>
-            {itens.map(item =>
+            {products.map(item =>
             <Item>
               <img src={item.image}></img>
               <DivSee>

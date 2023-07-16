@@ -1,4 +1,5 @@
 import styled from "styled-components"
+import { Link } from "react-router-dom"
 
 export default function Topo(){
     const Top = styled.div`
@@ -18,6 +19,8 @@ export default function Topo(){
     return(
         <Top>
             <div>ShopStail</div>
+            <Link to="/produtos">Prod</Link>
+            <Link to="/carrinho">Carrinho</Link>
         </Top>
     )
 }
